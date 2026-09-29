@@ -1,5 +1,3 @@
-# Spec viva: cuentas y acceso
-
 # Spec: registro-de-cuentas
 
 ## Purpose
@@ -300,12 +298,25 @@ El sistema SHALL redirigir cualquier dirección que no exista hacia el perfil, q
 ## 1. Requisitos escritos y comprobados
 
 - Requisitos escritos por el agente: **25**
-- Requisitos comprobados abriendo el código: _(a completar)_
+- Requisitos comprobados abriendo el código: **3**
+  -  Alta de cuenta vía API
+  -  El nombre completo es opcional pero hay que enviar el campo
+  - Validación de los datos de alta
+  
 
 ## 2. Incoherencias que aparecieron al escribirla
 
-_(a completar)_
+- En el prompt inicial se indicó esta regla: ´Solo comportamiento observable desde fuera. Ni un nombre de clase, ni un nombre de archivo, ni una ruta de código.´. Pero en las specs generadas se incluye nombres como ´fullName´ o ´database.unique´, y rutas de API.
+- En el alta: la spec indica un 200 al responder porque es lo que indica el código, pero realmente debería ser un 201.
+- Hay un escenario para evitar crear una cuenta con un email ya registrado. Pero el valor del email no se normaliza, y es posible crear cuentas distintar para ´Ada@example.com´ y ´ada@example.com´.
+- En el caso de las Iniciales: la spec dice que se usa la inicial de cada palabra. La API no recorta el nombre, así que "Ada  Lovelace" (doble espacio) da "AD" y " " da una cadena vacía.
+-  Tipo del nombre: el requisito "Validación de los datos de alta" lista las causas de rechazo y no incluye un ´fullName´ que no sea texto. Si el cuerpo trae ´fullName: 5´ (número, no texto), la API responde 422 con la regla ´string´, y la spec no lo recoge. Desde la pantalla no se puede reproducir, porque siempre envía texto. Igualmente, un nombre como 5 se acepta sin ninguna restricción de contenido. La spec habla de "nombre de una o varias palabras" al describir las iniciales, pero nada obliga a que sea un nombre. Y de hecho, es posible crear una nueva cuenta en ese caso.
+- Nombre vacío: con ´fullName: ""´ la validación pasa y la cuenta se guarda con nombre vacío. El requisito "El nombre completo es opcional" solo habla de ´null´ y de omitir el campo. Además, la pantalla de perfil muestra "Sin nombre" solo cuando el nombre es ´null´.
+
 
 ## 3. Lo que no supe decidir si era un bug o el contrato
 
-_(a completar)_
+- El formato del email no distingue entre mayúsculas y minúsculas, por lo que es posible crear dos cuentas con un email idéntico, como por ejemplo ´ADA@example.com´ y ´ada@example.com´. Esto debería considerarse un bug.
+- Con ´fullname´ "" no sé muy bien qué pasa. Porque la pantalla lo indica como opcional y es posible crear cuentas con este campo vacío, pero desde el front se convierte en `null`. No queda claro si deberían considerarse como un nombre válido o si realmente tendrían que ser valores iguales, ambos como `null`.
+- La contraseña permite espacios en blanco, y una contraseña con 8 carácteres en blanco se considera válida al crear una nueva cuenta. No creo que se haya considerado este caso, ni que sea un requerimiento que pueda considerarse válido. 
+
