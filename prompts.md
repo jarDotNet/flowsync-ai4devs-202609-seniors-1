@@ -22,14 +22,55 @@ Borra el ejemplo de abajo cuando escribas el primero.
 
 ## Prompt 1
 
-**Modelo:** Opus 1M xHigh
+**Modelo:** Sonnet 5.5 (medium)
 **Herramienta:** Claude Code
 
 ```
-Este es el ejemplo. Bórralo.
-
-El prompt va aquí dentro, entero y con sus saltos de línea,
-para que se sepa dónde empieza y dónde acaba.
+Lee los escenarios del requisito «Lo que cada tarea muestra de su responsable» de la spec que está en openspec/specs/tasks/spec.md. Genera los tests en backend/tests/functional/tasks/, siguiendo el estilo de los que ya hay en backend/tests/functional/auth/. No toques nada fuera de backend/tests/. No abras PR aún.
 ```
 
-**Qué salió:** (opcional, una línea) funcionó a la primera / tuve que insistir / me inventó una ruta que no existe.
+**Qué salió:** escribió 7 tests para los 3 escenarios del requisito, y ejecutó los tests: Salen 5 tests en verde y 2 en rojo.
+
+## Prompt 2
+
+**Modelo:** Sonnet 5.5 (medium)
+**Herramienta:** Claude Code
+
+```
+Ahora lee de nuevo los scenarios del requisito «Lo que cada tarea muestra de su responsable» y los tests generados en backend/tests/functional/tasks/assignee.spec.ts y genera una tabla de trazabilidad en docs/verificacion/jar.md. La matriz debe mapear, scenario a scenario, si el requisito está cubierto por los tests.
+El formato DEBE ser el siguiente:
+1. Encima, dos números: cuántos scenarios tiene el requisito y cuántos resultaron cubiertos.
+2. A continuación, una tabla con una fila por scenario y cuatro columnas.
+Las columnas son las siguientes:
+- Columna 1: Scenario, en una línea. Qué se espera y en qué situación.
+- Columna 2: Test que lo cubre, con el nombre exacto que aparece en la suite. Sin el nombre concreto, la columna va vacía.
+- Columna 3: Estado, Cubierto · No cubierto.
+- Columna 4: Qué test faltó, de momento vacía.
+
+No cambies nada fuera de este fichero, ni generes PR aún.
+```
+
+**Qué salió:** creó la matriz, indicando: 3 scenarios, 3 cubiertos. Remarcando que hay 2 tests en rojo y que «Cubierto» significa que hay un test que verifica el scenario, no que pase.
+
+## Prompt 3
+
+**Modelo:** Sonnet 5.5 (medium)
+**Herramienta:** Claude Code
+
+```
+ De los tests generados en backend/tests/functional/tasks/assignee.spec.ts, crees que hay alguno que falta para cubrir los 3 escenarios del requerimiento «Lo que cada tarea muestra de su responsable» ? No generes nada, solo ofrece una respuesta
+```
+
+**Qué salió:** sugirió añadir un test adicional al scenario 2: «La tarea no filtra datos de cuenta», para cubrir los casos de `PATCH`y `PUT`sobre `/tasks/:id/status`.
+
+## Prompt 4
+
+**Modelo:** Sonnet 5.5 (medium)
+**Herramienta:** Claude Code
+
+```
+Genera los 2 tests sugeridos y añádelos a backend/tests/functional/tasks/assignee.spec.ts.
+No toques nada más ni crees la PR aún.
+```
+
+**Qué salió:** generó 2 nuevos tests. De los cuales, uno falla y el otro pasa.

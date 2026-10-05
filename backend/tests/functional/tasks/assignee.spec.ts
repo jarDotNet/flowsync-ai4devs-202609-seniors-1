@@ -112,6 +112,42 @@ test.group('Tasks | responsable', (group) => {
     assert.sameMembers(Object.keys(assignee), ['id', 'fullName', 'initials'])
   })
 
+  test('la tarea tras cambiar su estado no filtra el email ni más datos de la cuenta', async ({
+    client,
+    assert,
+  }) => {
+    const { task } = await tareaDe('Ada Lovelace', 'ada@example.com')
+    const token = await sesion(client, 'ada@example.com')
+
+    const response = await client
+      .patch(`/api/v1/tasks/${task.id}/status`)
+      .json({ status: 'in_progress' })
+      .header('Authorization', `Bearer ${token}`)
+
+    response.assertStatus(200)
+    const { assignee } = response.body().data
+    assert.notProperty(assignee, 'email')
+    assert.sameMembers(Object.keys(assignee), ['id', 'fullName', 'initials'])
+  })
+
+  test('la tarea tras cambiar su fecha no filtra el email ni más datos de la cuenta', async ({
+    client,
+    assert,
+  }) => {
+    const { task } = await tareaDe('Ada Lovelace', 'ada@example.com')
+    const token = await sesion(client, 'ada@example.com')
+
+    const response = await client
+      .put(`/api/v1/tasks/${task.id}/due-date`)
+      .json({ today: HOY, dueDate: '2026-10-30' })
+      .header('Authorization', `Bearer ${token}`)
+
+    response.assertStatus(200)
+    const { assignee } = response.body().data
+    assert.notProperty(assignee, 'email')
+    assert.sameMembers(Object.keys(assignee), ['id', 'fullName', 'initials'])
+  })
+
   test('un responsable sin nombre llega con nombre nulo e iniciales', async ({
     client,
     assert,
