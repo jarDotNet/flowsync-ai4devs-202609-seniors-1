@@ -2,7 +2,6 @@
 
 ## Expectativas antes de empezar
 
-
 | Regla | Expectativa |
 |---|---|
 | R1 — Rama por unidad de trabajo | No |
